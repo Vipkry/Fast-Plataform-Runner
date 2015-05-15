@@ -1,7 +1,6 @@
 from PPlay.window import *
 from PPlay.gameimage import *
 from PPlay.sprite import *
-from PPlay.collision import *
 
 # Configurações
 janela = Window(800, 600)
@@ -33,13 +32,12 @@ personagem_speed_Y = 250
 personagem_speed_X = 300
 altura_do_pulo = 100
 altura_inicial = 0
-botao_pulo = False
-
-
+flag_pulo = False
+ja_pulou = False
 # Game loop
 while True:
     # Mudando de tela
-    if mouse.is_button_pressed(1) and mouse.is_over_object(logo) and menu == True:
+    if mouse.is_button_pressed(1) and mouse.is_over_object(icone_jogo) and menu == True:
         menu = False
     # Condição para saber em qual parte do jogo o jogador está (menu ou corrida)
     if menu:
@@ -53,12 +51,16 @@ while True:
     else:
         # Input
         personagem.move_key_x(personagem_speed_X * janela.delta_time())
-        # Pulo
+        # Pulo -> Agora tem que fazer o personagem parar quando colidir com o chão
         if teclado.key_pressed("UP"):
-            altura_inicial = personagem.y
-            botao_pulo = True
-        if personagem.y >= altura_inicial - altura_do_pulo and botao_pulo == True:
+            if flag_pulo == False:
+                altura_inicial = personagem.y
+                flag_pulo = True
+        if personagem.y > altura_inicial - altura_do_pulo and flag_pulo == True and ja_pulou ==  False:
             personagem.move_y(-personagem_speed_Y * janela.delta_time())
+        elif flag_pulo == True:
+            personagem.move_y(personagem_speed_Y * janela.delta_time())
+            ja_pulou = True
         # RENDER Jogo
         fundo_menu.draw()
         logo.draw()
